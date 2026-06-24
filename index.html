@@ -19,6 +19,7 @@
     --third: #F59E0B;
     --fifth: #4CAF82;
     --other: #6B8FA8;
+    --altered: #B06ED4;
     --text: #E8DCC8;
     --text-dim: #7A6E5E;
     --surface2: #261808;
@@ -34,35 +35,22 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    user-select: none;
+    background: var(--bg); color: var(--text); font-family: var(--font);
+    min-height: 100dvh; display: flex; flex-direction: column;
+    overflow-x: hidden; user-select: none;
   }
 
-  /* HEADER */
   header {
-    padding: 12px 14px 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid var(--border);
-    background: var(--fretboard);
+    padding: 12px 14px 8px; display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border); background: var(--fretboard);
     position: sticky; top: 0; z-index: 100;
   }
   header h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; color: var(--gold); text-transform: uppercase; flex: 1; }
   .header-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
 
-  /* CONTROLS */
   .controls {
-    padding: 10px 14px;
-    display: flex; flex-direction: column; gap: 8px;
-    background: var(--fretboard);
-    border-bottom: 1px solid var(--border);
+    padding: 10px 14px; display: flex; flex-direction: column; gap: 8px;
+    background: var(--fretboard); border-bottom: 1px solid var(--border);
   }
   .control-row { display: flex; align-items: center; gap: 8px; }
   .control-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; min-width: 60px; }
@@ -91,43 +79,27 @@
   .fret-count-btn:active { transform: scale(0.9); }
   .fret-count-val { font-size: 13px; font-weight: 700; color: var(--gold); min-width: 22px; text-align: center; }
 
-  /* FRETBOARD */
   .fretboard-wrapper {
     overflow-x: auto; padding: 0;
     -webkit-overflow-scrolling: touch; scrollbar-width: none;
   }
   .fretboard-wrapper::-webkit-scrollbar { display: none; }
+  .fretboard { display: inline-flex; flex-direction: column; padding: 8px 16px 8px 8px; min-width: max-content; }
 
-  .fretboard {
-    display: inline-flex; flex-direction: column;
-    padding: 10px 16px 10px 8px;
-    min-width: max-content;
-  }
-
-  /* Number rows */
   .num-row { display: flex; align-items: center; height: 18px; }
   .num-spacer { width: var(--name-w); flex-shrink: 0; }
   .num-open  { width: var(--open-w); flex-shrink: 0; text-align: center; font-size: 9px; color: var(--text-dim); }
   .num-cell  { width: var(--cell-w); flex-shrink: 0; text-align: center; font-size: 9px; color: var(--text-dim); }
   .num-cell.dot-fret { color: var(--gold); font-weight: 700; }
 
-  /* String row */
   .string-row { display: flex; align-items: center; height: var(--cell-h); position: relative; }
+  .sname { width: var(--name-w); flex-shrink: 0; text-align: center; font-size: 11px; font-weight: 700; color: var(--text-dim); }
 
-  /* String name */
-  .sname {
-    width: var(--name-w); flex-shrink: 0;
-    text-align: center; font-size: 11px; font-weight: 700; color: var(--text-dim);
-  }
-
-  /* The string wire */
   .string-wire {
-    position: absolute;
-    left: var(--name-w); right: 0; top: 50%;
+    position: absolute; left: var(--name-w); right: 0; top: 50%;
     pointer-events: none; z-index: 0;
     background: linear-gradient(to right, var(--string-color), rgba(184,148,58,0.3));
   }
-  /* String thickness by index (0=Mi grave, 5=Mi aigu) */
   .string-row[data-string="0"] .string-wire { height: 3px; margin-top: -1.5px; }
   .string-row[data-string="1"] .string-wire { height: 2.5px; margin-top: -1.25px; }
   .string-row[data-string="2"] .string-wire { height: 2px; margin-top: -1px; }
@@ -135,63 +107,50 @@
   .string-row[data-string="4"] .string-wire { height: 1.2px; margin-top: -0.6px; }
   .string-row[data-string="5"] .string-wire { height: 1px; margin-top: -0.5px; }
 
-  /* Nut (before fret 0) */
   .nut {
     width: var(--open-w); flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     position: relative; z-index: 1;
-    border-right: 3px solid #9A8A70;
-    height: 100%;
+    border-right: 3px solid #9A8A70; height: 100%;
   }
-
-  /* Fret cell */
   .fcell {
     width: var(--cell-w); flex-shrink: 0; height: 100%;
     display: flex; align-items: center; justify-content: center;
     position: relative; z-index: 1; cursor: pointer;
   }
-  /* Fret wire on right */
   .fcell::after {
-    content: ''; position: absolute; right: 0; top: 4px; bottom: 4px;
-    width: 2px;
+    content: ''; position: absolute; right: 0; top: 4px; bottom: 4px; width: 2px;
     background: linear-gradient(to bottom, transparent, var(--fret-color) 30%, var(--fret-color) 70%, transparent);
     pointer-events: none;
   }
+  .fcell.sel { background: rgba(200,168,75,0.07); }
 
-  /* Note dot */
+  /* Note dots — taille réduite si altération pour loger le symbole */
   .ndot {
     width: 30px; height: 30px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700;
-    transition: transform 0.15s;
-    position: relative; z-index: 2;
+    font-size: 11px; font-weight: 700; transition: transform 0.15s;
+    position: relative; z-index: 2; letter-spacing: -0.02em;
   }
-  .ndot:active { transform: scale(1.2); }
+  .ndot.small { width: 34px; height: 28px; border-radius: 14px; font-size: 9.5px; }
+  .ndot:active { transform: scale(1.15); }
   .ndot.hidden { visibility: hidden; }
-  .ndot.r-tonic { background: var(--tonic); color: #fff; box-shadow: 0 0 10px rgba(232,69,69,0.6); }
-  .ndot.r-third  { background: var(--third); color: #1A1100; box-shadow: 0 0 8px rgba(245,158,11,0.5); }
-  .ndot.r-fifth  { background: var(--fifth); color: #0A1A12; box-shadow: 0 0 8px rgba(76,175,130,0.5); }
-  .ndot.r-other  { background: var(--other); color: #fff; box-shadow: 0 0 6px rgba(107,143,168,0.4); }
+  .ndot.r-tonic  { background: var(--tonic);   color: #fff;    box-shadow: 0 0 10px rgba(232,69,69,0.6); }
+  .ndot.r-third  { background: var(--third);   color: #1A1100; box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+  .ndot.r-fifth  { background: var(--fifth);   color: #0A1A12; box-shadow: 0 0 8px rgba(76,175,130,0.5); }
+  .ndot.r-other  { background: var(--other);   color: #fff;    box-shadow: 0 0 6px rgba(107,143,168,0.4); }
+  .ndot.r-altered{ background: var(--altered); color: #fff;    box-shadow: 0 0 8px rgba(176,110,212,0.5); }
 
-  /* Inlay dots row */
   .inlay-row { display: flex; align-items: center; height: 16px; }
   .inlay-spacer { width: var(--name-w); flex-shrink: 0; }
   .inlay-open   { width: var(--open-w); flex-shrink: 0; }
-  .inlay-cell   { width: var(--cell-w); flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .inlay-cell   { width: var(--cell-w); flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 5px; }
   .idot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); opacity: 0.35; }
 
-  /* Selected fret highlight */
-  .fcell.sel { background: rgba(200,168,75,0.07); }
-
-  /* FRET PANEL */
-  .fret-panel {
-    margin: 10px 14px; border-radius: var(--radius);
-    background: var(--surface2); border: 1px solid var(--border); overflow: hidden;
-  }
+  .fret-panel { margin: 10px 14px; border-radius: var(--radius); background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
   .fret-panel.hidden { display: none; }
   .fp-header {
-    padding: 9px 14px; background: rgba(200,168,75,0.08);
-    border-bottom: 1px solid var(--border);
+    padding: 9px 14px; background: rgba(200,168,75,0.08); border-bottom: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
   }
   .fp-title { font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
@@ -207,23 +166,21 @@
   }
   .fp-table td { padding: 7px 12px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(58,40,15,0.5); }
   .fp-table tr:last-child td { border-bottom: none; }
-  .deg-badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700;
-  }
+  .deg-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 22px; border-radius: 11px; font-size: 10px; font-weight: 700; }
   .db-1 { background: rgba(232,69,69,0.25); color: var(--tonic); }
   .db-3 { background: rgba(245,158,11,0.25); color: var(--third); }
   .db-5 { background: rgba(76,175,130,0.25); color: var(--fifth); }
   .db-o { background: rgba(107,143,168,0.15); color: var(--other); }
+  .db-a { background: rgba(176,110,212,0.2); color: var(--altered); }
 
-  /* LEGEND */
-  .legend { display: flex; gap: 14px; padding: 6px 14px 12px; flex-wrap: wrap; }
+  .legend { display: flex; gap: 12px; padding: 6px 14px 12px; flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-dim); }
-  .ldot { width: 10px; height: 10px; border-radius: 50%; }
-  .ldot.tonic { background: var(--tonic); }
-  .ldot.third { background: var(--third); }
-  .ldot.fifth { background: var(--fifth); }
-  .ldot.other { background: var(--other); }
+  .ldot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ldot.tonic   { background: var(--tonic); }
+  .ldot.third   { background: var(--third); }
+  .ldot.fifth   { background: var(--fifth); }
+  .ldot.other   { background: var(--other); }
+  .ldot.altered { background: var(--altered); }
 
   .scroll-hint { text-align: right; font-size: 9px; color: var(--text-dim); padding: 4px 14px 0; opacity: 0.5; letter-spacing: 0.05em; }
 </style>
@@ -285,7 +242,8 @@
   <div class="legend-item"><span class="ldot tonic"></span><span id="lg1">Tonique</span></div>
   <div class="legend-item" id="lg3w"><span class="ldot third"></span><span id="lg3">Tierce</span></div>
   <div class="legend-item" id="lg5w"><span class="ldot fifth"></span><span id="lg5">Quinte</span></div>
-  <div class="legend-item" id="lgOw"><span class="ldot other"></span><span>Autres</span></div>
+  <div class="legend-item" id="lgOw" style="display:none"><span class="ldot other"></span><span id="lgO">Autres</span></div>
+  <div class="legend-item" id="lgAw" style="display:none"><span class="ldot altered"></span><span>Altérations</span></div>
 </div>
 
 <div class="fret-panel hidden" id="fret-panel">
@@ -303,54 +261,37 @@
 </div>
 
 <script>
-// ── THEORY ────────────────────────────────────────────────────────────────────
-// Each semitone 0-11 maps to exactly ONE natural note name (no ambiguity).
-// We simply pick the enharmonic name that IS a natural note.
-// Semitones: Do=0, Ré=2, Mi=4, Fa=5, Sol=7, La=9, Si=11
-// Non-natural semitones (1,3,6,8,10) → rounded to nearest natural (unique mapping):
-// 1→Do(0), 3→Ré(2) ou Mi(4) → on choisit Ré, 6→Fa(5) ou Sol(7) → on choisit Fa,
-// 8→Sol(7) ou La(9) → on choisit Sol, 10→La(9) ou Si(11) → on choisit La
-const SEMI_TO_NATURAL = [0,0,2,2,4,5,5,7,7,9,9,11];
-// ^ index = semitone 0-11, value = semitone of the natural note chosen
-// Seuls les 7 demi-tons naturels ont un nom — les autres sont null (altérations, non affichées)
-const SEMI_TO_NAME = [
-  'Do',  // 0
-  null,  // 1  Do#/Ré♭
-  'Ré',  // 2
-  null,  // 3  Ré#/Mi♭
-  'Mi',  // 4
-  'Fa',  // 5
-  null,  // 6  Fa#/Sol♭
-  'Sol', // 7
-  null,  // 8  Sol#/La♭
-  'La',  // 9
-  null,  // 10 La#/Si♭
-  'Si',  // 11
+// ── THÉORIE ───────────────────────────────────────────────────────────────────
+
+// Chaque demi-ton → [nom_diese, nom_bemol]
+const NOTE_NAMES = [
+  ['Do',  'Do' ],   // 0
+  ['Do#', 'Ré♭'],  // 1
+  ['Ré',  'Ré' ],   // 2
+  ['Ré#', 'Mi♭'],  // 3
+  ['Mi',  'Mi' ],   // 4
+  ['Fa',  'Fa' ],   // 5
+  ['Fa#', 'Sol♭'], // 6
+  ['Sol', 'Sol'],   // 7
+  ['Sol#','La♭'],  // 8
+  ['La',  'La' ],   // 9
+  ['La#', 'Si♭'],  // 10
+  ['Si',  'Si' ],   // 11
 ];
 
-const NATURALS = ['Do','Ré','Mi','Fa','Sol','La','Si'];
-const NATURAL_SEMI = [0,2,4,5,7,9,11]; // semitone of each natural note
+// Modes qui préfèrent les bémols
+const FLAT_MODES = new Set(['minor-triad','penta-minor']);
 
-// Open strings, low (Mi grave) to high (Mi aigu) — index 0=Mi grave
-// Mi=4, La=9, Ré=2, Sol=7, Si=11, Mi=4
-const OPEN = [4,9,2,7,11,4];
-const SNAMES = ['Mi','La','Ré','Sol','Si','Mi']; // index 0=Mi grave
-
-// Display order: Mi grave at BOTTOM → render from index 5 down to 0
-// So rows top→bottom = index 5,4,3,2,1,0
-const ROW_ORDER = [5,4,3,2,1,0];
-
-const INLAY_SINGLE = new Set([3,5,7,9,15,17,19,21]);
-const INLAY_DOUBLE = new Set([12,24]);
-
-// Modes: returns array of natural note indices (in NATURALS) for each degree
-const MODES = {
-  'single':       t => [t],
-  'major-triad':  t => [t, (t+2)%7, (t+4)%7],
-  'minor-triad':  t => [t, (t+2)%7, (t+4)%7],
-  'penta-major':  t => [t, (t+1)%7, (t+2)%7, (t+4)%7, (t+5)%7],
-  'penta-minor':  t => [t, (t+2)%7, (t+3)%7, (t+4)%7, (t+6)%7],
+// Intervalles exacts (demi-tons) pour chaque mode
+const MODE_INTERVALS = {
+  'single':       [0],
+  'major-triad':  [0,4,7],
+  'minor-triad':  [0,3,7],
+  'penta-major':  [0,2,4,7,9],
+  'penta-minor':  [0,3,5,7,10],
 };
+
+// Étiquettes de degrés
 const MODE_DEG = {
   'single':       ['1'],
   'major-triad':  ['1','3','5'],
@@ -358,30 +299,58 @@ const MODE_DEG = {
   'penta-major':  ['1','2','3','5','6'],
   'penta-minor':  ['1','3m','4','5','7m'],
 };
+
+// Rôle couleur par degré
 const DEG_ROLE = {'1':'tonic','3':'third','3m':'third','5':'fifth'};
+
+// Cordes en demi-tons (Mi grave=index 0)
+const OPEN  = [4,9,2,7,11,4];
+const SNAMES = ['Mi','La','Ré','Sol','Si','Mi'];
+const ROW_ORDER = [5,4,3,2,1,0]; // affichage: Mi aigu en haut, Mi grave en bas
+
+const INLAY_SINGLE = new Set([3,5,7,9,15,17,19,21]);
+const INLAY_DOUBLE = new Set([12,24]);
+
+const NATURALS = ['Do','Ré','Mi','Fa','Sol','La','Si'];
+const NATURAL_SEMI = [0,2,4,5,7,9,11];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let S = { tonic:'Do', mode:'single', display:'notes', frets:12, selFret:null };
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-function noteAtFret(strIdx, fret) {
-  const semi = (OPEN[strIdx] + fret) % 12;
-  const name = SEMI_TO_NAME[semi]; // null si alteration
-  const natIdx = (name !== null) ? NATURALS.indexOf(name) : -1;
-  return { semi, name, natIdx };
+
+// Nom d'une note selon demi-ton + préférence modale
+function noteName(semi, mode) {
+  const useFlat = FLAT_MODES.has(mode);
+  return NOTE_NAMES[((semi % 12) + 12) % 12][useFlat ? 1 : 0];
 }
 
-function activeNotes() {
-  const ti = NATURALS.indexOf(S.tonic);
-  return (MODES[S.mode] || (()=>[]))(ti);
+// En mode "note seule", on n'affiche que les notes naturelles
+function isNatural(semi) {
+  return NATURAL_SEMI.includes(((semi % 12) + 12) % 12);
 }
 
-function noteRole(natIdx) {
-  const an = activeNotes();
-  const pos = an.indexOf(natIdx);
+// Calcule les demi-tons absolus des notes de la gamme pour la tonique+mode choisis
+function getScaleSemitones() {
+  const tonicSemi = NATURAL_SEMI[NATURALS.indexOf(S.tonic)];
+  return (MODE_INTERVALS[S.mode] || [0]).map(i => (tonicSemi + i) % 12);
+}
+
+// Trouve le rôle d'un demi-ton dans la gamme courante
+// Retourne null si la note n'est pas dans la gamme
+function getSemiRole(semi) {
+  const s = ((semi % 12) + 12) % 12;
+  const scale = getScaleSemitones();
+  const pos = scale.indexOf(s);
   if (pos < 0) return null;
   const deg = MODE_DEG[S.mode][pos];
   return { deg, role: DEG_ROLE[deg] || 'other' };
+}
+
+// Note à une frette donnée pour une corde donnée
+function noteAtFret(strIdx, fret) {
+  const semi = (OPEN[strIdx] + fret) % 12;
+  return semi;
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -417,6 +386,46 @@ function buildInlayRow() {
   return row;
 }
 
+function makeDot(semi) {
+  const dot = document.createElement('div');
+  const isSingleMode = S.mode === 'single';
+
+  if (isSingleMode) {
+    // Mode note seule : uniquement les notes naturelles de la tonique
+    const tonicSemi = NATURAL_SEMI[NATURALS.indexOf(S.tonic)];
+    if (semi !== tonicSemi) { dot.className = 'ndot hidden'; return dot; }
+    dot.className = 'ndot r-tonic';
+    dot.textContent = S.display === 'notes' ? noteName(semi, S.mode) : '1';
+    return dot;
+  }
+
+  // Modes gamme/triade : cherche si ce demi-ton est dans la gamme
+  const role = getSemiRole(semi);
+
+  if (!role) {
+    dot.className = 'ndot hidden';
+    return dot;
+  }
+
+  const name = noteName(semi, S.mode);
+  const isAlt = !isNatural(semi); // note altérée (dièse ou bémol)
+
+  let cls;
+  if (isAlt) {
+    cls = 'r-altered'; // toujours violet si altération, peu importe le degré
+  } else {
+    cls = role.role === 'tonic' ? 'r-tonic'
+        : role.role === 'third' ? 'r-third'
+        : role.role === 'fifth' ? 'r-fifth' : 'r-other';
+  }
+
+  // Forme ovale pour les noms longs (Mi♭, Ré#, Sol#…)
+  const isLong = name.length > 2;
+  dot.className = `ndot ${cls}${isLong ? ' small' : ''}`;
+  dot.textContent = S.display === 'notes' ? name : role.deg;
+  return dot;
+}
+
 function buildFretboard() {
   const fb = document.getElementById('fretboard');
   fb.innerHTML = '';
@@ -427,34 +436,27 @@ function buildFretboard() {
     row.className = 'string-row';
     row.dataset.string = si;
 
-    // String name
     const sn = document.createElement('div');
     sn.className = 'sname';
     sn.textContent = SNAMES[si];
     row.appendChild(sn);
 
-    // String wire (behind everything)
     const wire = document.createElement('div');
     wire.className = 'string-wire';
     row.appendChild(wire);
 
-    // Open string (nut area)
+    // Corde à vide (frette 0)
     const nut = document.createElement('div');
     nut.className = 'nut';
-    const openNote = noteAtFret(si, 0);
-    const openR = noteRole(openNote.natIdx);
-    const openDot = makeDot(openNote, openR);
-    nut.appendChild(openDot);
+    nut.appendChild(makeDot(noteAtFret(si, 0)));
     nut.addEventListener('click', () => toggleFret(0));
     row.appendChild(nut);
 
-    // Frets 1..N
+    // Frettes 1..N
     for (let f = 1; f <= S.frets; f++) {
       const cell = document.createElement('div');
       cell.className = 'fcell' + (S.selFret === f ? ' sel' : '');
-      const nd = noteAtFret(si, f);
-      const r = noteRole(nd.natIdx);
-      cell.appendChild(makeDot(nd, r));
+      cell.appendChild(makeDot(noteAtFret(si, f)));
       cell.addEventListener('click', () => toggleFret(f));
       row.appendChild(cell);
     }
@@ -463,47 +465,35 @@ function buildFretboard() {
   });
 
   fb.appendChild(buildInlayRow());
-  fb.appendChild(buildNumRow()); // numbers also at bottom
-}
-
-function makeDot(noteData, roleData) {
-  const dot = document.createElement('div');
-  // Masquer si alteration (note non naturelle) OU note inactive
-  if (noteData.natIdx === -1 || !roleData) {
-    dot.className = 'ndot hidden';
-    return dot;
-  }
-  const cls = roleData.role === 'tonic' ? 'r-tonic'
-            : roleData.role === 'third' ? 'r-third'
-            : roleData.role === 'fifth' ? 'r-fifth' : 'r-other';
-  dot.className = 'ndot ' + cls;
-  dot.textContent = S.display === 'notes' ? noteData.name : roleData.deg;
-  return dot;
-}
-
-function toggleFret(f) {
-  S.selFret = S.selFret === f ? null : f;
-  render();
-  if (S.selFret !== null) {
-    setTimeout(() => document.getElementById('fret-panel')
-      .scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
-  }
+  fb.appendChild(buildNumRow());
 }
 
 function buildLegend() {
-  const an = activeNotes();
-  const degs = MODE_DEG[S.mode];
-  const ti = NATURALS.indexOf(S.tonic);
+  const scale = getScaleSemitones();
+  const degs  = MODE_DEG[S.mode];
+
   document.getElementById('lg1').textContent = `${S.tonic} (1)`;
-  if (an.length > 1) {
-    document.getElementById('lg3').textContent = `${NATURALS[an[1]]} (${degs[1]})`;
+
+  if (scale.length > 1) {
+    document.getElementById('lg3').textContent = `${noteName(scale[1], S.mode)} (${degs[1]})`;
     document.getElementById('lg3w').style.display = '';
   } else { document.getElementById('lg3w').style.display = 'none'; }
-  if (an.length > 2) {
-    document.getElementById('lg5').textContent = `${NATURALS[an[2]]} (${degs[2]})`;
+
+  if (scale.length > 2) {
+    document.getElementById('lg5').textContent = `${noteName(scale[2], S.mode)} (${degs[2]})`;
     document.getElementById('lg5w').style.display = '';
   } else { document.getElementById('lg5w').style.display = 'none'; }
-  document.getElementById('lgOw').style.display = an.length > 3 ? '' : 'none';
+
+  // Autres notes (penta)
+  if (scale.length > 3) {
+    const others = scale.slice(3).map((s,i) => `${noteName(s,S.mode)}(${degs[i+3]})`).join(' ');
+    document.getElementById('lgO').textContent = others;
+    document.getElementById('lgOw').style.display = '';
+  } else { document.getElementById('lgOw').style.display = 'none'; }
+
+  // Altérations présentes ?
+  const hasAltered = scale.some(s => !isNatural(s));
+  document.getElementById('lgAw').style.display = hasAltered ? '' : 'none';
 }
 
 function buildPanel() {
@@ -513,16 +503,17 @@ function buildPanel() {
   document.getElementById('fp-title').textContent =
     S.selFret === 0 ? 'Cordes à vide' : `Frette ${S.selFret}`;
 
-  const hasDeg = activeNotes().length > 0;
+  const hasDeg = S.mode !== 'single';
   document.getElementById('fp-deg-th').style.display = hasDeg ? '' : 'none';
 
   const tbody = document.getElementById('fp-body');
   tbody.innerHTML = '';
 
-  // Show from Mi grave (0) to Mi aigu (5) in panel
   [0,1,2,3,4,5].forEach(si => {
-    const nd = noteAtFret(si, S.selFret);
-    const r = noteRole(nd.natIdx);
+    const semi = noteAtFret(si, S.selFret);
+    const role = getSemiRole(semi);
+    const name = noteName(semi, S.mode);
+    const isAlt = !isNatural(semi);
     const tr = document.createElement('tr');
 
     const tdS = document.createElement('td');
@@ -531,20 +522,22 @@ function buildPanel() {
     tr.appendChild(tdS);
 
     const tdN = document.createElement('td');
-    if (r) {
-      const col = r.role==='tonic'?'var(--tonic)':r.role==='third'?'var(--third)':r.role==='fifth'?'var(--fifth)':'var(--other)';
-      tdN.innerHTML = `<span style="color:${col}">${nd.name}</span>`;
-    } else {
-      tdN.textContent = nd.name;
-      tdN.style.opacity = '0.35';
+    let col = 'var(--text)';
+    if (role) {
+      col = isAlt ? 'var(--altered)'
+          : role.role === 'tonic' ? 'var(--tonic)'
+          : role.role === 'third' ? 'var(--third)'
+          : role.role === 'fifth' ? 'var(--fifth)' : 'var(--other)';
     }
+    tdN.innerHTML = `<span style="color:${role ? col : 'var(--text-dim)'}; opacity:${role?1:0.35}">${name}</span>`;
     tr.appendChild(tdN);
 
     if (hasDeg) {
       const tdD = document.createElement('td');
-      if (r) {
-        const cls = r.role==='tonic'?'db-1':r.role==='third'?'db-3':r.role==='fifth'?'db-5':'db-o';
-        tdD.innerHTML = `<span class="deg-badge ${cls}">${r.deg}</span>`;
+      if (role) {
+        const dcls = isAlt ? 'db-a'
+                   : role.role==='tonic'?'db-1':role.role==='third'?'db-3':role.role==='fifth'?'db-5':'db-o';
+        tdD.innerHTML = `<span class="deg-badge ${dcls}">${role.deg}</span>`;
       } else {
         tdD.innerHTML = '<span style="color:var(--text-dim);font-size:11px">–</span>';
       }
@@ -552,6 +545,15 @@ function buildPanel() {
     }
     tbody.appendChild(tr);
   });
+}
+
+function toggleFret(f) {
+  S.selFret = S.selFret === f ? null : f;
+  render();
+  if (S.selFret !== null) {
+    setTimeout(() => document.getElementById('fret-panel')
+      .scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+  }
 }
 
 // ── EVENTS ────────────────────────────────────────────────────────────────────
