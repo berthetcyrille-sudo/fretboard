@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Manche de Guitare</title>
+<style>
+  :root {
+    --bg: #0F0A04;
+    --fretboard: #1E1208;
+    --fretboard-light: #2A1A0A;
+    --fret-color: #6B6560;
+    --string-color: #B8943A;
+    --string-glow: rgba(200,168,75,0.4);
+    --tonic: #E84545;
+    --third: #F59E0B;
+    --fifth: #4CAF82;
+    --other: #6B8FA8;
+    --text: #E8DCC8;
+    --text-dim: #7A6E5E;
+    --surface: #1A110600;
+    --surface2: #261808;
+    --border: #3A280F;
+    --gold: #C8A84B;
+    --gold-dim: rgba(200,168,75,0.15);
+    --radius: 12px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 14px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--fretboard);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header svg { flex-shrink: 0; }
+  header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .header-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--fretboard);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .control-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    min-width: 60px;
+  }
+
+  .pill-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .pill {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+  .pill:active { transform: scale(0.94); }
+  .pill.active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .pill.tonic-active {
+    background: rgba(232,69,69,0.18);
+    border-color: var(--tonic);
+    color: var(--tonic);
+  }
+
+  .toggle-group {
+    display: flex;
+    gap: 4px;
+  }
+  .toggle-btn {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .toggle-btn.active {
+    background: var(--surface2);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── FRETBOARD WRAPPER ── */
+  .fretboard-wrapper {
+    overflow-x: auto;
+    padding: 16px 0 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .fretboard-wrapper::-webkit-scrollbar { display: none; }
+
+  .fretboard {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    padding: 8px 0;
+    min-width: max-content;
+    margin-left: 8px;
+  }
+
+  /* ── FRET NUMBERS ── */
+  .fret-numbers {
+    display: flex;
+    margin-bottom: 4px;
+  }
+  .fret-num-spacer { width: 36px; flex-shrink: 0; }
+  .fret-num {
+    width: 42px;
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+  .fret-num.dot-fret { color: var(--gold); }
+
+  /* ── STRING ROW ── */
+  .string-row {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    position: relative;
+  }
+
+  .string-name {
+    width: 36px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  /* The string line runs behind the cells */
+  .string-row::after {
+    content: '';
+    position: absolute;
+    left: 36px;
+    right: 0;
+    top: 50%;
+    height: 1.5px;
+    background: linear-gradient(to right, var(--string-color), rgba(200,168,75,0.3));
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* Thicker strings for lower strings */
+  .string-row:nth-child(2)::after { height: 2.5px; }
+  .string-row:nth-child(3)::after { height: 2px; }
+  .string-row:nth-child(4)::after { height: 1.8px; }
+  .string-row:nth-child(5)::after { height: 1.5px; }
+  .string-row:nth-child(6)::after { height: 1.2px; }
+  .string-row:nth-child(7)::after { height: 1px; }
+
+  /* ── FRET CELL ── */
+  .fret-cell {
+    width: 42px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  /* Fret wire (right border) */
+  .fret-cell::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--fret-color), transparent);
+    pointer-events: none;
+  }
+  .fret-cell.fret-0::after { display: none; }
+
+  /* Open string area */
+  .fret-cell.fret-0 {
+    border-right: 3px solid var(--fret-color);
+    width: 22px;
+  }
+
+  /* Note dot */
+  .note-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.02em;
+  }
+  .note-dot.hidden { display: none; }
+
+  .note-dot.role-tonic {
+    background: var(--tonic);
+    color: white;
+    box-shadow: 0 0 10px rgba(232,69,69,0.6);
+  }
+  .note-dot.role-third {
+    background: var(--third);
+    color: #1A1100;
+    box-shadow: 0 0 8px rgba(245,158,11,0.5);
+  }
+  .note-dot.role-fifth {
+    background: var(--fifth);
+    color: #0A1A12;
+    box-shadow: 0 0 8px rgba(76,175,130,0.5);
+  }
+  .note-dot.role-other {
+    background: var(--other);
+    color: white;
+    box-shadow: 0 0 6px rgba(107,143,168,0.4);
+  }
+  .note-dot.role-none {
+    background: transparent;
+    color: transparent;
+    pointer-events: none;
+  }
+
+  /* Fret-click highlight */
+  .fret-cell.fret-highlighted .note-dot {
+    outline: 2px solid rgba(255,255,255,0.5);
+    outline-offset: 1px;
+  }
+
+  /* ── FRET DOTS (inlay) ── */
+  .fret-dots-row {
+    display: flex;
+    margin-top: 6px;
+  }
+  .fret-dot-spacer { width: 36px; }
+  .fret-dot-cell {
+    width: 42px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fret-dot-cell.fret-0 { width: 22px; }
+  .inlay-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    opacity: 0.4;
+  }
+  .inlay-dot.double { display: flex; gap: 4px; background: transparent; }
+  .inlay-dot.double::before, .inlay-dot.double::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    opacity: 0.4;
+  }
+
+  /* ── FRET INFO PANEL ── */
+  .fret-panel {
+    margin: 12px 14px;
+    border-radius: var(--radius);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .fret-panel.hidden { display: none; }
+
+  .fret-panel-header {
+    padding: 10px 14px;
+    background: rgba(200,168,75,0.08);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .fret-panel-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .fret-panel-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .fret-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .fret-table th {
+    padding: 7px 12px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .fret-table td {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(58,40,15,0.5);
+  }
+  .fret-table tr:last-child td { border-bottom: none; }
+  .fret-table .string-col { color: var(--text-dim); font-size: 11px; }
+  .fret-table .note-col { color: var(--text); }
+  .deg-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .deg-1 { background: rgba(232,69,69,0.25); color: var(--tonic); }
+  .deg-3 { background: rgba(245,158,11,0.25); color: var(--third); }
+  .deg-5 { background: rgba(76,175,130,0.25); color: var(--fifth); }
+  .deg-other { background: rgba(107,143,168,0.15); color: var(--other); }
+  .deg-none { color: var(--text-dim); font-size: 11px; }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 12px;
+    padding: 8px 14px 12px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .legend-dot.tonic { background: var(--tonic); }
+  .legend-dot.third { background: var(--third); }
+  .legend-dot.fifth { background: var(--fifth); }
+  .legend-dot.other { background: var(--other); }
+
+  /* ── SCROLL HINT ── */
+  .scroll-hint {
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-dim);
+    padding: 4px 0 2px;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+  }
+
+  /* ── FRETTES COUNT ── */
+  .fret-count-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px 2px;
+  }
+  .fret-count-row .control-label { min-width: auto; }
+  .fret-count-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .fret-count-btn:active { transform: scale(0.9); }
+  .fret-count-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  /* pulse animation on tap */
+  @keyframes pulse-dot {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  .note-dot.pulse { animation: pulse-dot 0.25s ease-out; }
+</style>
+</head>
+<body>
+
+<header>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <path d="M20 4C20 4 16 2 12 2C8 2 4 6 4 10C4 13 5.5 15 7 16.5L5 21L7 22L9 18.5C10 19.2 11 19.5 12 19.5C16 19.5 20 15.5 20 11V4Z" stroke="#C8A84B" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="9" cy="12" r="1.5" fill="#C8A84B"/>
+    <line x1="15" y1="6" x2="18" y2="6" stroke="#C8A84B" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="15" y1="9" x2="18" y2="9" stroke="#C8A84B" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <h1>Manche</h1>
+    <div class="header-sub">Explorateur de guitare</div>
+  </div>
+</header>
+
+<div class="controls">
+  <!-- Tonique -->
+  <div class="control-row">
+    <span class="control-label">Tonique</span>
+    <div class="pill-group" id="tonic-pills">
+      <button class="pill tonic-active" data-note="Do">Do</button>
+      <button class="pill" data-note="Ré">Ré</button>
+      <button class="pill" data-note="Mi">Mi</button>
+      <button class="pill" data-note="Fa">Fa</button>
+      <button class="pill" data-note="Sol">Sol</button>
+      <button class="pill" data-note="La">La</button>
+      <button class="pill" data-note="Si">Si</button>
+    </div>
+  </div>
+
+  <!-- Mode -->
+  <div class="control-row">
+    <span class="control-label">Mode</span>
+    <div class="pill-group" id="mode-pills">
+      <button class="pill active" data-mode="single">Note</button>
+      <button class="pill" data-mode="major-triad">Triade maj.</button>
+      <button class="pill" data-mode="minor-triad">Triade min.</button>
+      <button class="pill" data-mode="penta-major">Penta maj.</button>
+      <button class="pill" data-mode="penta-minor">Penta min.</button>
+    </div>
+  </div>
+
+  <!-- Affichage -->
+  <div class="control-row">
+    <span class="control-label">Affichage</span>
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="display-notes">Notes</button>
+      <button class="toggle-btn" id="display-degrees">Degrés</button>
+    </div>
+    <div style="flex:1"></div>
+    <div class="fret-count-row">
+      <button class="fret-count-btn" id="fret-less">−</button>
+      <span class="fret-count-val" id="fret-count-val">12</span>
+      <button class="fret-count-btn" id="fret-more">+</button>
+      <span class="control-label" style="min-width:auto;margin-left:2px">frets</span>
+    </div>
+  </div>
+</div>
+
+<div class="scroll-hint">← Faites défiler le manche →</div>
+
+<div class="fretboard-wrapper">
+  <div class="fretboard" id="fretboard"></div>
+</div>
+
+<div class="legend" id="legend">
+  <div class="legend-item"><span class="legend-dot tonic"></span><span id="legend-1">Tonique</span></div>
+  <div class="legend-item"><span class="legend-dot third"></span><span id="legend-3">Tierce</span></div>
+  <div class="legend-item"><span class="legend-dot fifth"></span><span id="legend-5">Quinte</span></div>
+  <div class="legend-item" id="legend-other-wrap"><span class="legend-dot other"></span><span id="legend-other">Autres notes</span></div>
+</div>
+
+<div class="fret-panel hidden" id="fret-panel">
+  <div class="fret-panel-header">
+    <span class="fret-panel-title" id="fret-panel-title">Frette 5</span>
+    <button class="fret-panel-close" id="fret-panel-close">×</button>
+  </div>
+  <table class="fret-table">
+    <thead>
+      <tr>
+        <th>Corde</th>
+        <th>Note</th>
+        <th id="panel-deg-header" style="display:none">Degré</th>
+      </tr>
+    </thead>
+    <tbody id="fret-panel-body"></tbody>
+  </table>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+// Chromatic scale (12 semitones), with natural note mapping
+const CHROMATIC = ['Do','Do','Ré','Ré','Mi','Fa','Fa','Sol','Sol','La','La','Si'];
+// Natural equivalent (round to nearest natural note, no sharps/flats)
+const NATURAL_MAP = [0,0,2,2,4,5,5,7,7,9,9,11]; // maps each semitone to a natural note index
+const NATURALS = ['Do','Ré','Mi','Fa','Sol','La','Si'];
+const NATURAL_SEMITONES = [0,2,4,5,7,9,11]; // semitone of each natural note
+
+// Standard tuning open string notes (as semitone from C)
+// E2 La Ré Sol Si E4
+// Semitones: Mi=4, La=9, Ré=2, Sol=7, Si=11, Mi=4
+const OPEN_STRINGS = [4, 9, 2, 7, 11, 4]; // E A D G B E (low to high)
+const STRING_NAMES = ['Mi', 'La', 'Ré', 'Sol', 'Si', 'Mi'];
+// Display from high to low (top of fretboard = high E)
+const STRING_ORDER = [5, 4, 3, 2, 1, 0]; // index into OPEN_STRINGS
+
+// Modes: which natural notes relative to tonic (indices in NATURALS array, offset from tonic)
+const MODES = {
+  'single':       (t) => [t],
+  'major-triad':  (t) => [t, naturalStep(t,2), naturalStep(t,4)],   // 1 3 5
+  'minor-triad':  (t) => [t, naturalStep(t,2), naturalStep(t,4)],   // same notes, minor 3rd handled by position
+  'penta-major':  (t) => [t, naturalStep(t,1), naturalStep(t,2), naturalStep(t,4), naturalStep(t,5)], // 1 2 3 5 6
+  'penta-minor':  (t) => [t, naturalStep(t,2), naturalStep(t,3), naturalStep(t,4), naturalStep(t,6)], // 1 3 4 5 7
+};
+
+// Degree labels per mode
+const MODE_DEGREES = {
+  'single':       { 0: '1' },
+  'major-triad':  { 0: '1', 1: '3', 2: '5' },
+  'minor-triad':  { 0: '1', 1: '3', 2: '5' },
+  'penta-major':  { 0: '1', 1: '2', 2: '3', 3: '5', 4: '6' },
+  'penta-minor':  { 0: '1', 1: '3m', 2: '4', 3: '5', 4: '7m' },
+};
+
+// Degree → color role
+const DEG_ROLE = { '1': 'tonic', '3': 'third', '3m': 'third', '5': 'fifth' };
+
+// Inlay dots at standard frets
+const INLAY_SINGLE = [3,5,7,9,15,17,19,21];
+const INLAY_DOUBLE = [12,24];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state = {
+  tonic: 'Do',
+  mode: 'single',
+  displayMode: 'notes', // 'notes' | 'degrees'
+  fretCount: 12,
+  selectedFret: null,
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+
+function naturalStep(noteIdx, steps) {
+  return (noteIdx + steps) % 7;
+}
+
+function semitonesForNote(noteIdx) {
+  return NATURAL_SEMITONES[noteIdx];
+}
+
+function noteAtFret(stringIdx, fret) {
+  // Returns: { semitone, naturalIdx }
+  const open = OPEN_STRINGS[stringIdx];
+  const semi = (open + fret) % 12;
+  // Find closest natural note
+  let best = 0, bestDist = 99;
+  for (let i = 0; i < NATURALS.length; i++) {
+    const d = Math.min(Math.abs(NATURAL_SEMITONES[i] - semi), 12 - Math.abs(NATURAL_SEMITONES[i] - semi));
+    if (d < bestDist) { bestDist = d; best = i; }
+  }
+  return { semitone: semi, naturalIdx: best, name: NATURALS[best] };
+}
+
+function getActiveNotes() {
+  const tonicIdx = NATURALS.indexOf(state.tonic);
+  const noteFn = MODES[state.mode];
+  if (!noteFn) return [];
+  return noteFn(tonicIdx); // array of natural note indices
+}
+
+function getNoteRole(naturalIdx) {
+  const activeNotes = getActiveNotes();
+  const pos = activeNotes.indexOf(naturalIdx);
+  if (pos === -1) return { active: false, degree: null, role: 'none' };
+  const degMap = MODE_DEGREES[state.mode];
+  const deg = degMap[pos] || '?';
+  const role = DEG_ROLE[deg] || 'other';
+  return { active: true, degree: deg, role };
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+
+function render() {
+  renderFretboard();
+  renderLegend();
+  renderFretPanel();
+}
+
+function renderFretboard() {
+  const fb = document.getElementById('fretboard');
+  fb.innerHTML = '';
+
+  const fretCount = state.fretCount;
+
+  // Fret numbers row
+  const numRow = document.createElement('div');
+  numRow.className = 'fret-numbers';
+  const spacer = document.createElement('div');
+  spacer.className = 'fret-num-spacer';
+  numRow.appendChild(spacer);
+
+  // fret 0 (open)
+  const f0num = document.createElement('div');
+  f0num.className = 'fret-num fret-0';
+  f0num.style.width = '22px';
+  f0num.textContent = '0';
+  numRow.appendChild(f0num);
+
+  for (let f = 1; f <= fretCount; f++) {
+    const fn = document.createElement('div');
+    fn.className = 'fret-num' + (INLAY_SINGLE.includes(f) || INLAY_DOUBLE.includes(f) ? ' dot-fret' : '');
+    fn.textContent = f;
+    numRow.appendChild(fn);
+  }
+  fb.appendChild(numRow);
+
+  // String rows (high E first = index 5,4,3,2,1,0)
+  STRING_ORDER.forEach((si, rowIdx) => {
+    const row = document.createElement('div');
+    row.className = 'string-row';
+
+    // String name
+    const nameEl = document.createElement('div');
+    nameEl.className = 'string-name';
+    nameEl.textContent = STRING_NAMES[si];
+    row.appendChild(nameEl);
+
+    // Fret 0 (open string)
+    for (let f = 0; f <= fretCount; f++) {
+      const cell = document.createElement('div');
+      cell.className = 'fret-cell' + (f === 0 ? ' fret-0' : '');
+      if (state.selectedFret !== null && f === state.selectedFret) {
+        cell.classList.add('fret-highlighted');
+      }
+
+      const noteData = noteAtFret(si, f);
+      const { active, degree, role } = getNoteRole(noteData.naturalIdx);
+
+      const dot = document.createElement('div');
+      dot.className = 'note-dot' + (active ? '' : ' hidden') + (active ? ' role-' + role : ' role-none');
+      if (active) {
+        dot.textContent = state.displayMode === 'notes' ? noteData.name : degree;
+        dot.title = `${STRING_NAMES[si]} corde, frette ${f}: ${noteData.name}`;
+      }
+      cell.appendChild(dot);
+
+      cell.addEventListener('click', () => onFretClick(f));
+      row.appendChild(cell);
+    }
+
+    fb.appendChild(row);
+  });
+
+  // Inlay dots row
+  const dotsRow = document.createElement('div');
+  dotsRow.className = 'fret-dots-row';
+  const ds = document.createElement('div');
+  ds.className = 'fret-dot-spacer';
+  dotsRow.appendChild(ds);
+
+  const dc0 = document.createElement('div');
+  dc0.className = 'fret-dot-cell fret-0';
+  dotsRow.appendChild(dc0);
+
+  for (let f = 1; f <= fretCount; f++) {
+    const dc = document.createElement('div');
+    dc.className = 'fret-dot-cell';
+    if (INLAY_DOUBLE.includes(f)) {
+      const d = document.createElement('div');
+      d.className = 'inlay-dot double';
+      dc.appendChild(d);
+    } else if (INLAY_SINGLE.includes(f)) {
+      const d = document.createElement('div');
+      d.className = 'inlay-dot';
+      dc.appendChild(d);
+    }
+    dotsRow.appendChild(dc);
+  }
+  fb.appendChild(dotsRow);
+}
+
+function renderLegend() {
+  const activeNotes = getActiveNotes();
+  const degMap = MODE_DEGREES[state.mode];
+  const tonicIdx = NATURALS.indexOf(state.tonic);
+
+  document.getElementById('legend-1').textContent = `${state.tonic} (1)`;
+  if (activeNotes.length > 1) {
+    document.getElementById('legend-3').textContent = `${NATURALS[activeNotes[1]]} (${degMap[1]})`;
+    document.getElementById('legend-3').parentElement.style.display = '';
+  } else {
+    document.getElementById('legend-3').parentElement.style.display = 'none';
+  }
+  if (activeNotes.length > 2) {
+    document.getElementById('legend-5').textContent = `${NATURALS[activeNotes[2]]} (${degMap[2]})`;
+    document.getElementById('legend-5').parentElement.style.display = '';
+  } else {
+    document.getElementById('legend-5').parentElement.style.display = 'none';
+  }
+  if (activeNotes.length > 3) {
+    document.getElementById('legend-other-wrap').style.display = '';
+  } else {
+    document.getElementById('legend-other-wrap').style.display = 'none';
+  }
+}
+
+function renderFretPanel() {
+  if (state.selectedFret === null) {
+    document.getElementById('fret-panel').classList.add('hidden');
+    return;
+  }
+  const f = state.selectedFret;
+  document.getElementById('fret-panel').classList.remove('hidden');
+  document.getElementById('fret-panel-title').textContent = f === 0 ? 'Cordes à vide' : `Frette ${f}`;
+
+  const hasDeg = getActiveNotes().length > 0;
+  const degHeader = document.getElementById('panel-deg-header');
+  degHeader.style.display = hasDeg ? '' : 'none';
+
+  const tbody = document.getElementById('fret-panel-body');
+  tbody.innerHTML = '';
+
+  STRING_ORDER.forEach(si => {
+    const noteData = noteAtFret(si, f);
+    const { active, degree, role } = getNoteRole(noteData.naturalIdx);
+    const tr = document.createElement('tr');
+
+    const tdString = document.createElement('td');
+    tdString.className = 'string-col';
+    tdString.textContent = STRING_NAMES[si];
+    tr.appendChild(tdString);
+
+    const tdNote = document.createElement('td');
+    tdNote.className = 'note-col';
+    if (active) {
+      tdNote.innerHTML = `<span style="color:var(--${role === 'tonic' ? 'tonic' : role === 'third' ? 'third' : role === 'fifth' ? 'fifth' : 'other'})">${noteData.name}</span>`;
+    } else {
+      tdNote.textContent = noteData.name;
+      tdNote.style.opacity = '0.4';
+    }
+    tr.appendChild(tdNote);
+
+    if (hasDeg) {
+      const tdDeg = document.createElement('td');
+      if (active) {
+        const cls = role === 'tonic' ? 'deg-1' : role === 'third' ? 'deg-3' : role === 'fifth' ? 'deg-5' : 'deg-other';
+        tdDeg.innerHTML = `<span class="deg-badge ${cls}">${degree}</span>`;
+      } else {
+        tdDeg.innerHTML = `<span class="deg-none">–</span>`;
+      }
+      tr.appendChild(tdDeg);
+    }
+
+    tbody.appendChild(tr);
+  });
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+
+function onFretClick(fret) {
+  if (state.selectedFret === fret) {
+    state.selectedFret = null;
+  } else {
+    state.selectedFret = fret;
+  }
+  render();
+  if (state.selectedFret !== null) {
+    setTimeout(() => {
+      document.getElementById('fret-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+// Tonic pills
+document.getElementById('tonic-pills').addEventListener('click', e => {
+  const btn = e.target.closest('[data-note]');
+  if (!btn) return;
+  state.tonic = btn.dataset.note;
+  document.querySelectorAll('#tonic-pills .pill').forEach(p => p.classList.remove('tonic-active'));
+  btn.classList.add('tonic-active');
+  render();
+});
+
+// Mode pills
+document.getElementById('mode-pills').addEventListener('click', e => {
+  const btn = e.target.closest('[data-mode]');
+  if (!btn) return;
+  state.mode = btn.dataset.mode;
+  document.querySelectorAll('#mode-pills .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+});
+
+// Display toggle
+document.getElementById('display-notes').addEventListener('click', () => {
+  state.displayMode = 'notes';
+  document.getElementById('display-notes').classList.add('active');
+  document.getElementById('display-degrees').classList.remove('active');
+  render();
+});
+document.getElementById('display-degrees').addEventListener('click', () => {
+  state.displayMode = 'degrees';
+  document.getElementById('display-degrees').classList.add('active');
+  document.getElementById('display-notes').classList.remove('active');
+  render();
+});
+
+// Fret count
+document.getElementById('fret-less').addEventListener('click', () => {
+  if (state.fretCount > 6) {
+    state.fretCount--;
+    document.getElementById('fret-count-val').textContent = state.fretCount;
+    render();
+  }
+});
+document.getElementById('fret-more').addEventListener('click', () => {
+  if (state.fretCount < 24) {
+    state.fretCount++;
+    document.getElementById('fret-count-val').textContent = state.fretCount;
+    render();
+  }
+});
+
+// Panel close
+document.getElementById('fret-panel-close').addEventListener('click', () => {
+  state.selectedFret = null;
+  render();
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
