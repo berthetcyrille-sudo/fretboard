@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Manche de Guitare</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1E1208">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root {
     --bg: #0F0A04;
@@ -920,6 +923,13 @@ document.getElementById('fret-panel-close').addEventListener('click', () => {
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 render();
+
+// ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
 </script>
 </body>
 </html>
