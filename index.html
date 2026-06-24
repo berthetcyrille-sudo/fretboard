@@ -13,27 +13,26 @@
   :root {
     --bg: #0F0A04;
     --fretboard: #1E1208;
-    --fretboard-light: #2A1A0A;
     --fret-color: #6B6560;
     --string-color: #B8943A;
-    --string-glow: rgba(200,168,75,0.4);
     --tonic: #E84545;
     --third: #F59E0B;
     --fifth: #4CAF82;
     --other: #6B8FA8;
     --text: #E8DCC8;
     --text-dim: #7A6E5E;
-    --surface: #1A110600;
     --surface2: #261808;
     --border: #3A280F;
     --gold: #C8A84B;
     --gold-dim: rgba(200,168,75,0.15);
     --radius: 12px;
     --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --cell-w: 44px;
+    --cell-h: 40px;
+    --open-w: 24px;
+    --name-w: 32px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -45,473 +44,205 @@
     user-select: none;
   }
 
-  /* ── HEADER ── */
+  /* HEADER */
   header {
-    padding: 14px 16px 10px;
+    padding: 12px 14px 8px;
     display: flex;
     align-items: center;
     gap: 10px;
     border-bottom: 1px solid var(--border);
     background: var(--fretboard);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
   }
-  header svg { flex-shrink: 0; }
-  header h1 {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: var(--gold);
-    text-transform: uppercase;
-    flex: 1;
-  }
-  .header-sub {
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+  header h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; color: var(--gold); text-transform: uppercase; flex: 1; }
+  .header-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
 
-  /* ── CONTROLS ── */
+  /* CONTROLS */
   .controls {
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    padding: 10px 14px;
+    display: flex; flex-direction: column; gap: 8px;
     background: var(--fretboard);
     border-bottom: 1px solid var(--border);
   }
-
-  .control-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .control-label {
-    font-size: 10px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    min-width: 60px;
-  }
-
-  .pill-group {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    flex: 1;
-  }
-
+  .control-row { display: flex; align-items: center; gap: 8px; }
+  .control-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; min-width: 60px; }
+  .pill-group { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
   .pill {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    letter-spacing: 0.02em;
+    padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
   .pill:active { transform: scale(0.94); }
-  .pill.active {
-    background: var(--gold-dim);
-    border-color: var(--gold);
-    color: var(--gold);
-  }
-  .pill.tonic-active {
-    background: rgba(232,69,69,0.18);
-    border-color: var(--tonic);
-    color: var(--tonic);
-  }
-
-  .toggle-group {
-    display: flex;
-    gap: 4px;
-  }
+  .pill.active-tonic { background: rgba(232,69,69,0.18); border-color: var(--tonic); color: var(--tonic); }
+  .pill.active-mode  { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+  .toggle-group { display: flex; gap: 4px; }
   .toggle-btn {
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 600;
+    border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+    cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; text-transform: uppercase;
   }
-  .toggle-btn.active {
-    background: var(--surface2);
-    border-color: var(--gold);
-    color: var(--gold);
+  .toggle-btn.active { background: var(--surface2); border-color: var(--gold); color: var(--gold); }
+  .fret-count-row { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .fret-count-btn {
+    width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim); font-size: 16px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1;
   }
+  .fret-count-btn:active { transform: scale(0.9); }
+  .fret-count-val { font-size: 13px; font-weight: 700; color: var(--gold); min-width: 22px; text-align: center; }
 
-  /* ── FRETBOARD WRAPPER ── */
+  /* FRETBOARD */
   .fretboard-wrapper {
-    overflow-x: auto;
-    padding: 16px 0 8px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    overflow-x: auto; padding: 0;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
   }
   .fretboard-wrapper::-webkit-scrollbar { display: none; }
 
   .fretboard {
-    position: relative;
-    display: inline-flex;
-    flex-direction: column;
-    padding: 8px 0;
+    display: inline-flex; flex-direction: column;
+    padding: 10px 16px 10px 8px;
     min-width: max-content;
-    margin-left: 8px;
   }
 
-  /* ── FRET NUMBERS ── */
-  .fret-numbers {
-    display: flex;
-    margin-bottom: 4px;
-  }
-  .fret-num-spacer { width: 36px; flex-shrink: 0; }
-  .fret-num {
-    width: 42px;
-    text-align: center;
-    font-size: 9px;
-    color: var(--text-dim);
-    letter-spacing: 0.04em;
-    font-weight: 500;
-  }
-  .fret-num.dot-fret { color: var(--gold); }
+  /* Number rows */
+  .num-row { display: flex; align-items: center; height: 18px; }
+  .num-spacer { width: var(--name-w); flex-shrink: 0; }
+  .num-open  { width: var(--open-w); flex-shrink: 0; text-align: center; font-size: 9px; color: var(--text-dim); }
+  .num-cell  { width: var(--cell-w); flex-shrink: 0; text-align: center; font-size: 9px; color: var(--text-dim); }
+  .num-cell.dot-fret { color: var(--gold); font-weight: 700; }
 
-  /* ── STRING ROW ── */
-  .string-row {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    position: relative;
+  /* String row */
+  .string-row { display: flex; align-items: center; height: var(--cell-h); position: relative; }
+
+  /* String name */
+  .sname {
+    width: var(--name-w); flex-shrink: 0;
+    text-align: center; font-size: 11px; font-weight: 700; color: var(--text-dim);
   }
 
-  .string-name {
-    width: 36px;
-    flex-shrink: 0;
-    text-align: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-dim);
-    letter-spacing: 0.02em;
-  }
-
-  /* The string line runs behind the cells */
-  .string-row::after {
-    content: '';
+  /* The string wire */
+  .string-wire {
     position: absolute;
-    left: 36px;
-    right: 0;
-    top: 50%;
-    height: 1.5px;
-    background: linear-gradient(to right, var(--string-color), rgba(200,168,75,0.3));
-    z-index: 0;
-    pointer-events: none;
+    left: var(--name-w); right: 0; top: 50%;
+    pointer-events: none; z-index: 0;
+    background: linear-gradient(to right, var(--string-color), rgba(184,148,58,0.3));
   }
-  /* Thicker strings for lower strings */
-  .string-row:nth-child(2)::after { height: 2.5px; }
-  .string-row:nth-child(3)::after { height: 2px; }
-  .string-row:nth-child(4)::after { height: 1.8px; }
-  .string-row:nth-child(5)::after { height: 1.5px; }
-  .string-row:nth-child(6)::after { height: 1.2px; }
-  .string-row:nth-child(7)::after { height: 1px; }
+  /* String thickness by index (0=Mi grave, 5=Mi aigu) */
+  .string-row[data-string="0"] .string-wire { height: 3px; margin-top: -1.5px; }
+  .string-row[data-string="1"] .string-wire { height: 2.5px; margin-top: -1.25px; }
+  .string-row[data-string="2"] .string-wire { height: 2px; margin-top: -1px; }
+  .string-row[data-string="3"] .string-wire { height: 1.5px; margin-top: -0.75px; }
+  .string-row[data-string="4"] .string-wire { height: 1.2px; margin-top: -0.6px; }
+  .string-row[data-string="5"] .string-wire { height: 1px; margin-top: -0.5px; }
 
-  /* ── FRET CELL ── */
-  .fret-cell {
-    width: 42px;
-    height: 40px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 1;
-    cursor: pointer;
+  /* Nut (before fret 0) */
+  .nut {
+    width: var(--open-w); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    border-right: 3px solid #9A8A70;
+    height: 100%;
   }
 
-  /* Fret wire (right border) */
-  .fret-cell::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
+  /* Fret cell */
+  .fcell {
+    width: var(--cell-w); flex-shrink: 0; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1; cursor: pointer;
+  }
+  /* Fret wire on right */
+  .fcell::after {
+    content: ''; position: absolute; right: 0; top: 4px; bottom: 4px;
     width: 2px;
-    background: linear-gradient(to bottom, transparent, var(--fret-color), transparent);
+    background: linear-gradient(to bottom, transparent, var(--fret-color) 30%, var(--fret-color) 70%, transparent);
     pointer-events: none;
-  }
-  .fret-cell.fret-0::after { display: none; }
-
-  /* Open string area */
-  .fret-cell.fret-0 {
-    border-right: 3px solid var(--fret-color);
-    width: 22px;
   }
 
   /* Note dot */
-  .note-dot {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    transition: all 0.2s;
-    position: relative;
-    z-index: 2;
-    letter-spacing: -0.02em;
+  .ndot {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    transition: transform 0.15s;
+    position: relative; z-index: 2;
   }
-  .note-dot.hidden { display: none; }
+  .ndot:active { transform: scale(1.2); }
+  .ndot.hidden { visibility: hidden; }
+  .ndot.r-tonic { background: var(--tonic); color: #fff; box-shadow: 0 0 10px rgba(232,69,69,0.6); }
+  .ndot.r-third  { background: var(--third); color: #1A1100; box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+  .ndot.r-fifth  { background: var(--fifth); color: #0A1A12; box-shadow: 0 0 8px rgba(76,175,130,0.5); }
+  .ndot.r-other  { background: var(--other); color: #fff; box-shadow: 0 0 6px rgba(107,143,168,0.4); }
 
-  .note-dot.role-tonic {
-    background: var(--tonic);
-    color: white;
-    box-shadow: 0 0 10px rgba(232,69,69,0.6);
-  }
-  .note-dot.role-third {
-    background: var(--third);
-    color: #1A1100;
-    box-shadow: 0 0 8px rgba(245,158,11,0.5);
-  }
-  .note-dot.role-fifth {
-    background: var(--fifth);
-    color: #0A1A12;
-    box-shadow: 0 0 8px rgba(76,175,130,0.5);
-  }
-  .note-dot.role-other {
-    background: var(--other);
-    color: white;
-    box-shadow: 0 0 6px rgba(107,143,168,0.4);
-  }
-  .note-dot.role-none {
-    background: transparent;
-    color: transparent;
-    pointer-events: none;
-  }
+  /* Inlay dots row */
+  .inlay-row { display: flex; align-items: center; height: 16px; }
+  .inlay-spacer { width: var(--name-w); flex-shrink: 0; }
+  .inlay-open   { width: var(--open-w); flex-shrink: 0; }
+  .inlay-cell   { width: var(--cell-w); flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .idot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); opacity: 0.35; }
 
-  /* Fret-click highlight */
-  .fret-cell.fret-highlighted .note-dot {
-    outline: 2px solid rgba(255,255,255,0.5);
-    outline-offset: 1px;
-  }
+  /* Selected fret highlight */
+  .fcell.sel { background: rgba(200,168,75,0.07); }
 
-  /* ── FRET DOTS (inlay) ── */
-  .fret-dots-row {
-    display: flex;
-    margin-top: 6px;
-  }
-  .fret-dot-spacer { width: 36px; }
-  .fret-dot-cell {
-    width: 42px;
-    height: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .fret-dot-cell.fret-0 { width: 22px; }
-  .inlay-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    opacity: 0.4;
-  }
-  .inlay-dot.double { display: flex; gap: 4px; background: transparent; }
-  .inlay-dot.double::before, .inlay-dot.double::after {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    opacity: 0.4;
-  }
-
-  /* ── FRET INFO PANEL ── */
+  /* FRET PANEL */
   .fret-panel {
-    margin: 12px 14px;
-    border-radius: var(--radius);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    overflow: hidden;
-    transition: all 0.3s;
+    margin: 10px 14px; border-radius: var(--radius);
+    background: var(--surface2); border: 1px solid var(--border); overflow: hidden;
   }
   .fret-panel.hidden { display: none; }
-
-  .fret-panel-header {
-    padding: 10px 14px;
-    background: rgba(200,168,75,0.08);
+  .fp-header {
+    padding: 9px 14px; background: rgba(200,168,75,0.08);
     border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .fret-panel-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gold);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  .fp-title { font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
+  .fp-close {
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim); font-size: 14px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
   }
-  .fret-panel-close {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    line-height: 1;
+  .fp-table { width: 100%; border-collapse: collapse; }
+  .fp-table th {
+    padding: 6px 12px; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim); text-align: left; font-weight: 600; border-bottom: 1px solid var(--border);
   }
-
-  .fret-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .fret-table th {
-    padding: 7px 12px;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-dim);
-    text-align: left;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-  }
-  .fret-table td {
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    border-bottom: 1px solid rgba(58,40,15,0.5);
-  }
-  .fret-table tr:last-child td { border-bottom: none; }
-  .fret-table .string-col { color: var(--text-dim); font-size: 11px; }
-  .fret-table .note-col { color: var(--text); }
+  .fp-table td { padding: 7px 12px; font-size: 13px; font-weight: 600; border-bottom: 1px solid rgba(58,40,15,0.5); }
+  .fp-table tr:last-child td { border-bottom: none; }
   .deg-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    font-size: 11px;
-    font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700;
   }
-  .deg-1 { background: rgba(232,69,69,0.25); color: var(--tonic); }
-  .deg-3 { background: rgba(245,158,11,0.25); color: var(--third); }
-  .deg-5 { background: rgba(76,175,130,0.25); color: var(--fifth); }
-  .deg-other { background: rgba(107,143,168,0.15); color: var(--other); }
-  .deg-none { color: var(--text-dim); font-size: 11px; }
+  .db-1 { background: rgba(232,69,69,0.25); color: var(--tonic); }
+  .db-3 { background: rgba(245,158,11,0.25); color: var(--third); }
+  .db-5 { background: rgba(76,175,130,0.25); color: var(--fifth); }
+  .db-o { background: rgba(107,143,168,0.15); color: var(--other); }
 
-  /* ── LEGEND ── */
-  .legend {
-    display: flex;
-    gap: 12px;
-    padding: 8px 14px 12px;
-    flex-wrap: wrap;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.04em;
-  }
-  .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  .legend-dot.tonic { background: var(--tonic); }
-  .legend-dot.third { background: var(--third); }
-  .legend-dot.fifth { background: var(--fifth); }
-  .legend-dot.other { background: var(--other); }
+  /* LEGEND */
+  .legend { display: flex; gap: 14px; padding: 6px 14px 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-dim); }
+  .ldot { width: 10px; height: 10px; border-radius: 50%; }
+  .ldot.tonic { background: var(--tonic); }
+  .ldot.third { background: var(--third); }
+  .ldot.fifth { background: var(--fifth); }
+  .ldot.other { background: var(--other); }
 
-  /* ── SCROLL HINT ── */
-  .scroll-hint {
-    text-align: center;
-    font-size: 9px;
-    color: var(--text-dim);
-    padding: 4px 0 2px;
-    letter-spacing: 0.06em;
-    opacity: 0.6;
-  }
-
-  /* ── FRETTES COUNT ── */
-  .fret-count-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 14px 2px;
-  }
-  .fret-count-row .control-label { min-width: auto; }
-  .fret-count-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    line-height: 1;
-  }
-  .fret-count-btn:active { transform: scale(0.9); }
-  .fret-count-val {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--gold);
-    min-width: 28px;
-    text-align: center;
-  }
-
-  /* pulse animation on tap */
-  @keyframes pulse-dot {
-    0% { transform: scale(1); }
-    40% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-  }
-  .note-dot.pulse { animation: pulse-dot 0.25s ease-out; }
+  .scroll-hint { text-align: right; font-size: 9px; color: var(--text-dim); padding: 4px 14px 0; opacity: 0.5; letter-spacing: 0.05em; }
 </style>
 </head>
 <body>
 
 <header>
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
     <path d="M20 4C20 4 16 2 12 2C8 2 4 6 4 10C4 13 5.5 15 7 16.5L5 21L7 22L9 18.5C10 19.2 11 19.5 12 19.5C16 19.5 20 15.5 20 11V4Z" stroke="#C8A84B" stroke-width="1.5" stroke-linejoin="round"/>
     <circle cx="9" cy="12" r="1.5" fill="#C8A84B"/>
-    <line x1="15" y1="6" x2="18" y2="6" stroke="#C8A84B" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="15" y1="9" x2="18" y2="9" stroke="#C8A84B" stroke-width="1.5" stroke-linecap="round"/>
   </svg>
-  <div>
-    <h1>Manche</h1>
-    <div class="header-sub">Explorateur de guitare</div>
-  </div>
+  <div><h1>Manche</h1><div class="header-sub">Explorateur de guitare</div></div>
 </header>
 
 <div class="controls">
-  <!-- Tonique -->
   <div class="control-row">
     <span class="control-label">Tonique</span>
     <div class="pill-group" id="tonic-pills">
-      <button class="pill tonic-active" data-note="Do">Do</button>
+      <button class="pill active-tonic" data-note="Do">Do</button>
       <button class="pill" data-note="Ré">Ré</button>
       <button class="pill" data-note="Mi">Mi</button>
       <button class="pill" data-note="Fa">Fa</button>
@@ -520,415 +251,349 @@
       <button class="pill" data-note="Si">Si</button>
     </div>
   </div>
-
-  <!-- Mode -->
   <div class="control-row">
     <span class="control-label">Mode</span>
     <div class="pill-group" id="mode-pills">
-      <button class="pill active" data-mode="single">Note</button>
+      <button class="pill active-mode" data-mode="single">Note</button>
       <button class="pill" data-mode="major-triad">Triade maj.</button>
       <button class="pill" data-mode="minor-triad">Triade min.</button>
       <button class="pill" data-mode="penta-major">Penta maj.</button>
       <button class="pill" data-mode="penta-minor">Penta min.</button>
     </div>
   </div>
-
-  <!-- Affichage -->
   <div class="control-row">
     <span class="control-label">Affichage</span>
     <div class="toggle-group">
-      <button class="toggle-btn active" id="display-notes">Notes</button>
-      <button class="toggle-btn" id="display-degrees">Degrés</button>
+      <button class="toggle-btn active" id="btn-notes">Notes</button>
+      <button class="toggle-btn" id="btn-degrees">Degrés</button>
     </div>
-    <div style="flex:1"></div>
     <div class="fret-count-row">
       <button class="fret-count-btn" id="fret-less">−</button>
-      <span class="fret-count-val" id="fret-count-val">12</span>
+      <span class="fret-count-val" id="fret-val">12</span>
       <button class="fret-count-btn" id="fret-more">+</button>
-      <span class="control-label" style="min-width:auto;margin-left:2px">frets</span>
+      <span class="control-label" style="min-width:auto">frets</span>
     </div>
   </div>
 </div>
 
-<div class="scroll-hint">← Faites défiler le manche →</div>
-
+<div class="scroll-hint">← faites défiler →</div>
 <div class="fretboard-wrapper">
   <div class="fretboard" id="fretboard"></div>
 </div>
 
 <div class="legend" id="legend">
-  <div class="legend-item"><span class="legend-dot tonic"></span><span id="legend-1">Tonique</span></div>
-  <div class="legend-item"><span class="legend-dot third"></span><span id="legend-3">Tierce</span></div>
-  <div class="legend-item"><span class="legend-dot fifth"></span><span id="legend-5">Quinte</span></div>
-  <div class="legend-item" id="legend-other-wrap"><span class="legend-dot other"></span><span id="legend-other">Autres notes</span></div>
+  <div class="legend-item"><span class="ldot tonic"></span><span id="lg1">Tonique</span></div>
+  <div class="legend-item" id="lg3w"><span class="ldot third"></span><span id="lg3">Tierce</span></div>
+  <div class="legend-item" id="lg5w"><span class="ldot fifth"></span><span id="lg5">Quinte</span></div>
+  <div class="legend-item" id="lgOw"><span class="ldot other"></span><span>Autres</span></div>
 </div>
 
 <div class="fret-panel hidden" id="fret-panel">
-  <div class="fret-panel-header">
-    <span class="fret-panel-title" id="fret-panel-title">Frette 5</span>
-    <button class="fret-panel-close" id="fret-panel-close">×</button>
+  <div class="fp-header">
+    <span class="fp-title" id="fp-title">Frette 5</span>
+    <button class="fp-close" id="fp-close">×</button>
   </div>
-  <table class="fret-table">
-    <thead>
-      <tr>
-        <th>Corde</th>
-        <th>Note</th>
-        <th id="panel-deg-header" style="display:none">Degré</th>
-      </tr>
-    </thead>
-    <tbody id="fret-panel-body"></tbody>
+  <table class="fp-table">
+    <thead><tr>
+      <th>Corde</th><th>Note</th>
+      <th id="fp-deg-th" style="display:none">Degré</th>
+    </tr></thead>
+    <tbody id="fp-body"></tbody>
   </table>
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
+// ── THEORY ────────────────────────────────────────────────────────────────────
+// Each semitone 0-11 maps to exactly ONE natural note name (no ambiguity).
+// We simply pick the enharmonic name that IS a natural note.
+// Semitones: Do=0, Ré=2, Mi=4, Fa=5, Sol=7, La=9, Si=11
+// Non-natural semitones (1,3,6,8,10) → rounded to nearest natural (unique mapping):
+// 1→Do(0), 3→Ré(2) ou Mi(4) → on choisit Ré, 6→Fa(5) ou Sol(7) → on choisit Fa,
+// 8→Sol(7) ou La(9) → on choisit Sol, 10→La(9) ou Si(11) → on choisit La
+const SEMI_TO_NATURAL = [0,0,2,2,4,5,5,7,7,9,9,11];
+// ^ index = semitone 0-11, value = semitone of the natural note chosen
+// Seuls les 7 demi-tons naturels ont un nom — les autres sont null (altérations, non affichées)
+const SEMI_TO_NAME = [
+  'Do',  // 0
+  null,  // 1  Do#/Ré♭
+  'Ré',  // 2
+  null,  // 3  Ré#/Mi♭
+  'Mi',  // 4
+  'Fa',  // 5
+  null,  // 6  Fa#/Sol♭
+  'Sol', // 7
+  null,  // 8  Sol#/La♭
+  'La',  // 9
+  null,  // 10 La#/Si♭
+  'Si',  // 11
+];
 
-// Chromatic scale (12 semitones), with natural note mapping
-const CHROMATIC = ['Do','Do','Ré','Ré','Mi','Fa','Fa','Sol','Sol','La','La','Si'];
-// Natural equivalent (round to nearest natural note, no sharps/flats)
-const NATURAL_MAP = [0,0,2,2,4,5,5,7,7,9,9,11]; // maps each semitone to a natural note index
 const NATURALS = ['Do','Ré','Mi','Fa','Sol','La','Si'];
-const NATURAL_SEMITONES = [0,2,4,5,7,9,11]; // semitone of each natural note
+const NATURAL_SEMI = [0,2,4,5,7,9,11]; // semitone of each natural note
 
-// Standard tuning open string notes (as semitone from C)
-// E2 La Ré Sol Si E4
-// Semitones: Mi=4, La=9, Ré=2, Sol=7, Si=11, Mi=4
-const OPEN_STRINGS = [4, 9, 2, 7, 11, 4]; // E A D G B E (low to high)
-const STRING_NAMES = ['Mi', 'La', 'Ré', 'Sol', 'Si', 'Mi'];
-// Display from high to low (top of fretboard = high E)
-const STRING_ORDER = [5, 4, 3, 2, 1, 0]; // index into OPEN_STRINGS
+// Open strings, low (Mi grave) to high (Mi aigu) — index 0=Mi grave
+// Mi=4, La=9, Ré=2, Sol=7, Si=11, Mi=4
+const OPEN = [4,9,2,7,11,4];
+const SNAMES = ['Mi','La','Ré','Sol','Si','Mi']; // index 0=Mi grave
 
-// Modes: which natural notes relative to tonic (indices in NATURALS array, offset from tonic)
+// Display order: Mi grave at BOTTOM → render from index 5 down to 0
+// So rows top→bottom = index 5,4,3,2,1,0
+const ROW_ORDER = [5,4,3,2,1,0];
+
+const INLAY_SINGLE = new Set([3,5,7,9,15,17,19,21]);
+const INLAY_DOUBLE = new Set([12,24]);
+
+// Modes: returns array of natural note indices (in NATURALS) for each degree
 const MODES = {
-  'single':       (t) => [t],
-  'major-triad':  (t) => [t, naturalStep(t,2), naturalStep(t,4)],   // 1 3 5
-  'minor-triad':  (t) => [t, naturalStep(t,2), naturalStep(t,4)],   // same notes, minor 3rd handled by position
-  'penta-major':  (t) => [t, naturalStep(t,1), naturalStep(t,2), naturalStep(t,4), naturalStep(t,5)], // 1 2 3 5 6
-  'penta-minor':  (t) => [t, naturalStep(t,2), naturalStep(t,3), naturalStep(t,4), naturalStep(t,6)], // 1 3 4 5 7
+  'single':       t => [t],
+  'major-triad':  t => [t, (t+2)%7, (t+4)%7],
+  'minor-triad':  t => [t, (t+2)%7, (t+4)%7],
+  'penta-major':  t => [t, (t+1)%7, (t+2)%7, (t+4)%7, (t+5)%7],
+  'penta-minor':  t => [t, (t+2)%7, (t+3)%7, (t+4)%7, (t+6)%7],
 };
-
-// Degree labels per mode
-const MODE_DEGREES = {
-  'single':       { 0: '1' },
-  'major-triad':  { 0: '1', 1: '3', 2: '5' },
-  'minor-triad':  { 0: '1', 1: '3', 2: '5' },
-  'penta-major':  { 0: '1', 1: '2', 2: '3', 3: '5', 4: '6' },
-  'penta-minor':  { 0: '1', 1: '3m', 2: '4', 3: '5', 4: '7m' },
+const MODE_DEG = {
+  'single':       ['1'],
+  'major-triad':  ['1','3','5'],
+  'minor-triad':  ['1','3m','5'],
+  'penta-major':  ['1','2','3','5','6'],
+  'penta-minor':  ['1','3m','4','5','7m'],
 };
-
-// Degree → color role
-const DEG_ROLE = { '1': 'tonic', '3': 'third', '3m': 'third', '5': 'fifth' };
-
-// Inlay dots at standard frets
-const INLAY_SINGLE = [3,5,7,9,15,17,19,21];
-const INLAY_DOUBLE = [12,24];
+const DEG_ROLE = {'1':'tonic','3':'third','3m':'third','5':'fifth'};
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let state = {
-  tonic: 'Do',
-  mode: 'single',
-  displayMode: 'notes', // 'notes' | 'degrees'
-  fretCount: 12,
-  selectedFret: null,
-};
+let S = { tonic:'Do', mode:'single', display:'notes', frets:12, selFret:null };
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-
-function naturalStep(noteIdx, steps) {
-  return (noteIdx + steps) % 7;
+function noteAtFret(strIdx, fret) {
+  const semi = (OPEN[strIdx] + fret) % 12;
+  const name = SEMI_TO_NAME[semi]; // null si alteration
+  const natIdx = (name !== null) ? NATURALS.indexOf(name) : -1;
+  return { semi, name, natIdx };
 }
 
-function semitonesForNote(noteIdx) {
-  return NATURAL_SEMITONES[noteIdx];
+function activeNotes() {
+  const ti = NATURALS.indexOf(S.tonic);
+  return (MODES[S.mode] || (()=>[]))(ti);
 }
 
-function noteAtFret(stringIdx, fret) {
-  // Returns: { semitone, naturalIdx }
-  const open = OPEN_STRINGS[stringIdx];
-  const semi = (open + fret) % 12;
-  // Find closest natural note
-  let best = 0, bestDist = 99;
-  for (let i = 0; i < NATURALS.length; i++) {
-    const d = Math.min(Math.abs(NATURAL_SEMITONES[i] - semi), 12 - Math.abs(NATURAL_SEMITONES[i] - semi));
-    if (d < bestDist) { bestDist = d; best = i; }
-  }
-  return { semitone: semi, naturalIdx: best, name: NATURALS[best] };
-}
-
-function getActiveNotes() {
-  const tonicIdx = NATURALS.indexOf(state.tonic);
-  const noteFn = MODES[state.mode];
-  if (!noteFn) return [];
-  return noteFn(tonicIdx); // array of natural note indices
-}
-
-function getNoteRole(naturalIdx) {
-  const activeNotes = getActiveNotes();
-  const pos = activeNotes.indexOf(naturalIdx);
-  if (pos === -1) return { active: false, degree: null, role: 'none' };
-  const degMap = MODE_DEGREES[state.mode];
-  const deg = degMap[pos] || '?';
-  const role = DEG_ROLE[deg] || 'other';
-  return { active: true, degree: deg, role };
+function noteRole(natIdx) {
+  const an = activeNotes();
+  const pos = an.indexOf(natIdx);
+  if (pos < 0) return null;
+  const deg = MODE_DEG[S.mode][pos];
+  return { deg, role: DEG_ROLE[deg] || 'other' };
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
+function render() { buildFretboard(); buildLegend(); buildPanel(); }
 
-function render() {
-  renderFretboard();
-  renderLegend();
-  renderFretPanel();
+function buildNumRow() {
+  const row = document.createElement('div');
+  row.className = 'num-row';
+  row.innerHTML = `<div class="num-spacer"></div><div class="num-open">0</div>`;
+  for (let f = 1; f <= S.frets; f++) {
+    const d = document.createElement('div');
+    d.className = 'num-cell' + (INLAY_SINGLE.has(f)||INLAY_DOUBLE.has(f) ? ' dot-fret' : '');
+    d.textContent = f;
+    row.appendChild(d);
+  }
+  return row;
 }
 
-function renderFretboard() {
+function buildInlayRow() {
+  const row = document.createElement('div');
+  row.className = 'inlay-row';
+  row.innerHTML = `<div class="inlay-spacer"></div><div class="inlay-open"></div>`;
+  for (let f = 1; f <= S.frets; f++) {
+    const cell = document.createElement('div');
+    cell.className = 'inlay-cell';
+    if (INLAY_DOUBLE.has(f)) {
+      cell.innerHTML = '<div class="idot"></div><div class="idot"></div>';
+    } else if (INLAY_SINGLE.has(f)) {
+      cell.innerHTML = '<div class="idot"></div>';
+    }
+    row.appendChild(cell);
+  }
+  return row;
+}
+
+function buildFretboard() {
   const fb = document.getElementById('fretboard');
   fb.innerHTML = '';
+  fb.appendChild(buildNumRow());
 
-  const fretCount = state.fretCount;
-
-  // Fret numbers row
-  const numRow = document.createElement('div');
-  numRow.className = 'fret-numbers';
-  const spacer = document.createElement('div');
-  spacer.className = 'fret-num-spacer';
-  numRow.appendChild(spacer);
-
-  // fret 0 (open)
-  const f0num = document.createElement('div');
-  f0num.className = 'fret-num fret-0';
-  f0num.style.width = '22px';
-  f0num.textContent = '0';
-  numRow.appendChild(f0num);
-
-  for (let f = 1; f <= fretCount; f++) {
-    const fn = document.createElement('div');
-    fn.className = 'fret-num' + (INLAY_SINGLE.includes(f) || INLAY_DOUBLE.includes(f) ? ' dot-fret' : '');
-    fn.textContent = f;
-    numRow.appendChild(fn);
-  }
-  fb.appendChild(numRow);
-
-  // String rows (high E first = index 5,4,3,2,1,0)
-  STRING_ORDER.forEach((si, rowIdx) => {
+  ROW_ORDER.forEach(si => {
     const row = document.createElement('div');
     row.className = 'string-row';
+    row.dataset.string = si;
 
     // String name
-    const nameEl = document.createElement('div');
-    nameEl.className = 'string-name';
-    nameEl.textContent = STRING_NAMES[si];
-    row.appendChild(nameEl);
+    const sn = document.createElement('div');
+    sn.className = 'sname';
+    sn.textContent = SNAMES[si];
+    row.appendChild(sn);
 
-    // Fret 0 (open string)
-    for (let f = 0; f <= fretCount; f++) {
+    // String wire (behind everything)
+    const wire = document.createElement('div');
+    wire.className = 'string-wire';
+    row.appendChild(wire);
+
+    // Open string (nut area)
+    const nut = document.createElement('div');
+    nut.className = 'nut';
+    const openNote = noteAtFret(si, 0);
+    const openR = noteRole(openNote.natIdx);
+    const openDot = makeDot(openNote, openR);
+    nut.appendChild(openDot);
+    nut.addEventListener('click', () => toggleFret(0));
+    row.appendChild(nut);
+
+    // Frets 1..N
+    for (let f = 1; f <= S.frets; f++) {
       const cell = document.createElement('div');
-      cell.className = 'fret-cell' + (f === 0 ? ' fret-0' : '');
-      if (state.selectedFret !== null && f === state.selectedFret) {
-        cell.classList.add('fret-highlighted');
-      }
-
-      const noteData = noteAtFret(si, f);
-      const { active, degree, role } = getNoteRole(noteData.naturalIdx);
-
-      const dot = document.createElement('div');
-      dot.className = 'note-dot' + (active ? '' : ' hidden') + (active ? ' role-' + role : ' role-none');
-      if (active) {
-        dot.textContent = state.displayMode === 'notes' ? noteData.name : degree;
-        dot.title = `${STRING_NAMES[si]} corde, frette ${f}: ${noteData.name}`;
-      }
-      cell.appendChild(dot);
-
-      cell.addEventListener('click', () => onFretClick(f));
+      cell.className = 'fcell' + (S.selFret === f ? ' sel' : '');
+      const nd = noteAtFret(si, f);
+      const r = noteRole(nd.natIdx);
+      cell.appendChild(makeDot(nd, r));
+      cell.addEventListener('click', () => toggleFret(f));
       row.appendChild(cell);
     }
 
     fb.appendChild(row);
   });
 
-  // Inlay dots row
-  const dotsRow = document.createElement('div');
-  dotsRow.className = 'fret-dots-row';
-  const ds = document.createElement('div');
-  ds.className = 'fret-dot-spacer';
-  dotsRow.appendChild(ds);
-
-  const dc0 = document.createElement('div');
-  dc0.className = 'fret-dot-cell fret-0';
-  dotsRow.appendChild(dc0);
-
-  for (let f = 1; f <= fretCount; f++) {
-    const dc = document.createElement('div');
-    dc.className = 'fret-dot-cell';
-    if (INLAY_DOUBLE.includes(f)) {
-      const d = document.createElement('div');
-      d.className = 'inlay-dot double';
-      dc.appendChild(d);
-    } else if (INLAY_SINGLE.includes(f)) {
-      const d = document.createElement('div');
-      d.className = 'inlay-dot';
-      dc.appendChild(d);
-    }
-    dotsRow.appendChild(dc);
-  }
-  fb.appendChild(dotsRow);
+  fb.appendChild(buildInlayRow());
+  fb.appendChild(buildNumRow()); // numbers also at bottom
 }
 
-function renderLegend() {
-  const activeNotes = getActiveNotes();
-  const degMap = MODE_DEGREES[state.mode];
-  const tonicIdx = NATURALS.indexOf(state.tonic);
+function makeDot(noteData, roleData) {
+  const dot = document.createElement('div');
+  // Masquer si alteration (note non naturelle) OU note inactive
+  if (noteData.natIdx === -1 || !roleData) {
+    dot.className = 'ndot hidden';
+    return dot;
+  }
+  const cls = roleData.role === 'tonic' ? 'r-tonic'
+            : roleData.role === 'third' ? 'r-third'
+            : roleData.role === 'fifth' ? 'r-fifth' : 'r-other';
+  dot.className = 'ndot ' + cls;
+  dot.textContent = S.display === 'notes' ? noteData.name : roleData.deg;
+  return dot;
+}
 
-  document.getElementById('legend-1').textContent = `${state.tonic} (1)`;
-  if (activeNotes.length > 1) {
-    document.getElementById('legend-3').textContent = `${NATURALS[activeNotes[1]]} (${degMap[1]})`;
-    document.getElementById('legend-3').parentElement.style.display = '';
-  } else {
-    document.getElementById('legend-3').parentElement.style.display = 'none';
-  }
-  if (activeNotes.length > 2) {
-    document.getElementById('legend-5').textContent = `${NATURALS[activeNotes[2]]} (${degMap[2]})`;
-    document.getElementById('legend-5').parentElement.style.display = '';
-  } else {
-    document.getElementById('legend-5').parentElement.style.display = 'none';
-  }
-  if (activeNotes.length > 3) {
-    document.getElementById('legend-other-wrap').style.display = '';
-  } else {
-    document.getElementById('legend-other-wrap').style.display = 'none';
+function toggleFret(f) {
+  S.selFret = S.selFret === f ? null : f;
+  render();
+  if (S.selFret !== null) {
+    setTimeout(() => document.getElementById('fret-panel')
+      .scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
   }
 }
 
-function renderFretPanel() {
-  if (state.selectedFret === null) {
-    document.getElementById('fret-panel').classList.add('hidden');
-    return;
-  }
-  const f = state.selectedFret;
-  document.getElementById('fret-panel').classList.remove('hidden');
-  document.getElementById('fret-panel-title').textContent = f === 0 ? 'Cordes à vide' : `Frette ${f}`;
+function buildLegend() {
+  const an = activeNotes();
+  const degs = MODE_DEG[S.mode];
+  const ti = NATURALS.indexOf(S.tonic);
+  document.getElementById('lg1').textContent = `${S.tonic} (1)`;
+  if (an.length > 1) {
+    document.getElementById('lg3').textContent = `${NATURALS[an[1]]} (${degs[1]})`;
+    document.getElementById('lg3w').style.display = '';
+  } else { document.getElementById('lg3w').style.display = 'none'; }
+  if (an.length > 2) {
+    document.getElementById('lg5').textContent = `${NATURALS[an[2]]} (${degs[2]})`;
+    document.getElementById('lg5w').style.display = '';
+  } else { document.getElementById('lg5w').style.display = 'none'; }
+  document.getElementById('lgOw').style.display = an.length > 3 ? '' : 'none';
+}
 
-  const hasDeg = getActiveNotes().length > 0;
-  const degHeader = document.getElementById('panel-deg-header');
-  degHeader.style.display = hasDeg ? '' : 'none';
+function buildPanel() {
+  const panel = document.getElementById('fret-panel');
+  if (S.selFret === null) { panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+  document.getElementById('fp-title').textContent =
+    S.selFret === 0 ? 'Cordes à vide' : `Frette ${S.selFret}`;
 
-  const tbody = document.getElementById('fret-panel-body');
+  const hasDeg = activeNotes().length > 0;
+  document.getElementById('fp-deg-th').style.display = hasDeg ? '' : 'none';
+
+  const tbody = document.getElementById('fp-body');
   tbody.innerHTML = '';
 
-  STRING_ORDER.forEach(si => {
-    const noteData = noteAtFret(si, f);
-    const { active, degree, role } = getNoteRole(noteData.naturalIdx);
+  // Show from Mi grave (0) to Mi aigu (5) in panel
+  [0,1,2,3,4,5].forEach(si => {
+    const nd = noteAtFret(si, S.selFret);
+    const r = noteRole(nd.natIdx);
     const tr = document.createElement('tr');
 
-    const tdString = document.createElement('td');
-    tdString.className = 'string-col';
-    tdString.textContent = STRING_NAMES[si];
-    tr.appendChild(tdString);
+    const tdS = document.createElement('td');
+    tdS.style.cssText = 'color:var(--text-dim);font-size:11px';
+    tdS.textContent = SNAMES[si];
+    tr.appendChild(tdS);
 
-    const tdNote = document.createElement('td');
-    tdNote.className = 'note-col';
-    if (active) {
-      tdNote.innerHTML = `<span style="color:var(--${role === 'tonic' ? 'tonic' : role === 'third' ? 'third' : role === 'fifth' ? 'fifth' : 'other'})">${noteData.name}</span>`;
+    const tdN = document.createElement('td');
+    if (r) {
+      const col = r.role==='tonic'?'var(--tonic)':r.role==='third'?'var(--third)':r.role==='fifth'?'var(--fifth)':'var(--other)';
+      tdN.innerHTML = `<span style="color:${col}">${nd.name}</span>`;
     } else {
-      tdNote.textContent = noteData.name;
-      tdNote.style.opacity = '0.4';
+      tdN.textContent = nd.name;
+      tdN.style.opacity = '0.35';
     }
-    tr.appendChild(tdNote);
+    tr.appendChild(tdN);
 
     if (hasDeg) {
-      const tdDeg = document.createElement('td');
-      if (active) {
-        const cls = role === 'tonic' ? 'deg-1' : role === 'third' ? 'deg-3' : role === 'fifth' ? 'deg-5' : 'deg-other';
-        tdDeg.innerHTML = `<span class="deg-badge ${cls}">${degree}</span>`;
+      const tdD = document.createElement('td');
+      if (r) {
+        const cls = r.role==='tonic'?'db-1':r.role==='third'?'db-3':r.role==='fifth'?'db-5':'db-o';
+        tdD.innerHTML = `<span class="deg-badge ${cls}">${r.deg}</span>`;
       } else {
-        tdDeg.innerHTML = `<span class="deg-none">–</span>`;
+        tdD.innerHTML = '<span style="color:var(--text-dim);font-size:11px">–</span>';
       }
-      tr.appendChild(tdDeg);
+      tr.appendChild(tdD);
     }
-
     tbody.appendChild(tr);
   });
 }
 
 // ── EVENTS ────────────────────────────────────────────────────────────────────
-
-function onFretClick(fret) {
-  if (state.selectedFret === fret) {
-    state.selectedFret = null;
-  } else {
-    state.selectedFret = fret;
-  }
-  render();
-  if (state.selectedFret !== null) {
-    setTimeout(() => {
-      document.getElementById('fret-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
-  }
-}
-
-// Tonic pills
 document.getElementById('tonic-pills').addEventListener('click', e => {
-  const btn = e.target.closest('[data-note]');
-  if (!btn) return;
-  state.tonic = btn.dataset.note;
-  document.querySelectorAll('#tonic-pills .pill').forEach(p => p.classList.remove('tonic-active'));
-  btn.classList.add('tonic-active');
+  const b = e.target.closest('[data-note]'); if (!b) return;
+  S.tonic = b.dataset.note;
+  document.querySelectorAll('#tonic-pills .pill').forEach(p => p.classList.remove('active-tonic'));
+  b.classList.add('active-tonic');
   render();
 });
-
-// Mode pills
 document.getElementById('mode-pills').addEventListener('click', e => {
-  const btn = e.target.closest('[data-mode]');
-  if (!btn) return;
-  state.mode = btn.dataset.mode;
-  document.querySelectorAll('#mode-pills .pill').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
+  const b = e.target.closest('[data-mode]'); if (!b) return;
+  S.mode = b.dataset.mode;
+  document.querySelectorAll('#mode-pills .pill').forEach(p => p.classList.remove('active-mode'));
+  b.classList.add('active-mode');
   render();
 });
-
-// Display toggle
-document.getElementById('display-notes').addEventListener('click', () => {
-  state.displayMode = 'notes';
-  document.getElementById('display-notes').classList.add('active');
-  document.getElementById('display-degrees').classList.remove('active');
+document.getElementById('btn-notes').addEventListener('click', () => {
+  S.display = 'notes';
+  document.getElementById('btn-notes').classList.add('active');
+  document.getElementById('btn-degrees').classList.remove('active');
   render();
 });
-document.getElementById('display-degrees').addEventListener('click', () => {
-  state.displayMode = 'degrees';
-  document.getElementById('display-degrees').classList.add('active');
-  document.getElementById('display-notes').classList.remove('active');
+document.getElementById('btn-degrees').addEventListener('click', () => {
+  S.display = 'degrees';
+  document.getElementById('btn-degrees').classList.add('active');
+  document.getElementById('btn-notes').classList.remove('active');
   render();
 });
-
-// Fret count
 document.getElementById('fret-less').addEventListener('click', () => {
-  if (state.fretCount > 6) {
-    state.fretCount--;
-    document.getElementById('fret-count-val').textContent = state.fretCount;
-    render();
-  }
+  if (S.frets > 6) { S.frets--; document.getElementById('fret-val').textContent = S.frets; render(); }
 });
 document.getElementById('fret-more').addEventListener('click', () => {
-  if (state.fretCount < 24) {
-    state.fretCount++;
-    document.getElementById('fret-count-val').textContent = state.fretCount;
-    render();
-  }
+  if (S.frets < 24) { S.frets++; document.getElementById('fret-val').textContent = S.frets; render(); }
 });
-
-// Panel close
-document.getElementById('fret-panel-close').addEventListener('click', () => {
-  state.selectedFret = null;
-  render();
-});
+document.getElementById('fp-close').addEventListener('click', () => { S.selFret = null; render(); });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 render();
 
-// ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
-  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 }
 </script>
 </body>
